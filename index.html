@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sour Grapes | A Digitally-Enhanced Murder Mystery Party hosted ONLINE by Dan Q</title>
+  <style type="text/css">
+    @font-face {
+      font-family: 'Wendy One';
+      font-style: normal;
+      font-weight: 400;
+      font-display: block;
+      src: local('Wendy One'), local('WendyOne-Regular'),
+           url('fonts/wendy-one-v8-latin-regular.woff2') format('woff2'),
+           url('fonts/wendy-one-v8-latin-regular.woff') format('woff');
+    }
+    @font-face {
+      font-family: 'Raleway';
+      font-style: normal;
+      font-weight: 400;
+      font-display: block;
+      src: local('Raleway'), local('Raleway-Regular'),
+           url('fonts/raleway-v14-latin-regular.woff2') format('woff2'),
+           url('fonts/raleway-v14-latin-regular.woff') format('woff');
+    }
+    @font-face {
+      font-family: 'Raleway';
+      font-style: normal;
+      font-weight: 700;
+      font-display: block;
+      src: local('Raleway Bold'), local('Raleway-Bold'),
+           url('fonts/raleway-v14-latin-700.woff2') format('woff2'),
+           url('fonts/raleway-v14-latin-700.woff') format('woff');
+    }
+
+    @keyframes body-hits-the-floor {
+      from,
+      60%,
+      75%,
+      90%,
+      to {
+        animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+      }
+
+      0% {
+        opacity: 0;
+        transform: translate3d(0, -3000px, 0);
+      }
+
+      60% {
+        opacity: 1;
+        transform: translate3d(0, 25px, 0);
+      }
+
+      75% {
+        transform: translate3d(0, -10px, 0);
+      }
+
+      90% {
+        transform: translate3d(0, 5px, 0);
+      }
+
+      to {
+        transform: translate3d(0, 0, 0);
+      }
+    }
+
+    @keyframes mr-stabby {
+      from {
+        transform-origin: right bottom;
+        transform: rotate3d(0, 0, 1, 45deg);
+        opacity: 0;
+      }
+
+      to {
+        transform-origin: right bottom;
+        transform: translate3d(0, 0, 0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes out-of-the-shadows {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      background: #030305 url('vineyard.jpg') center center / cover no-repeat fixed;
+      min-height: 100vh;
+      margin: 0;
+      padding: 2vh 2vh;
+      font-size: 24px;
+      font-family: 'Raleway', sans-serif;
+      font-weight: bold;
+      color: #ddd;
+    }
+
+    a {
+      text-decoration: underline solid #ffffff 2px;
+      color: #fff;
+    }
+
+    a:hover {
+      text-decoration: underline solid #2d0fff 2px;
+      color: #74cbff;
+    }
+
+    h1 {
+      font-family: 'Wendy One', sans-serif;
+      color: white;
+      font-size: 14vh;
+      line-height: 66%;
+      font-variant: small-caps;
+      width: 4em;
+      text-align: center;
+      margin-bottom: 2vh;
+      position: relative;
+      -webkit-text-stroke: 0.5vh black;
+      animation: 1s linear 0.25s body-hits-the-floor both;
+    }
+    h1::after {
+      display: block;
+      content: '';
+      background: url('corkscrew.svg') center center / contain;
+      width: 14.728vh;
+      height: 14vh;
+      position: absolute;
+      left: calc(50% - 7.364vh);
+      top: calc(50% - 7vh);
+      animation: 0.25s linear 1.5s mr-stabby both;
+    }
+
+    main {
+      max-width: 720px;
+      animation: 0.5s linear 1s out-of-the-shadows both;
+    }
+
+    dl {
+      margin-top: 0;
+      padding: 0.5em 3em;
+      background: rgba(255, 247, 185, 0.1);
+    }
+    dt {
+      margin-top: 1em;
+    }
+    dd {
+      margin-left: 0;
+      font-weight: normal;
+      font-size: 80%;
+    }
+
+    li {
+      padding: 0.25em 0;
+    }
+
+    aside {
+      border-top: 2px solid #fff;
+      font-size: 80%;
+      font-weight: normal;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>
+      Sour Grapes
+    </h1>
+  </header>
+  <main>
+    <article>
+      <p>
+        a murder mystery event featuring:
+      </p>
+
+      <dl>
+        <dt>Elizabeth Killingsworth</dt>
+
+        <dt>Chelsea Barren</dt>
+        <dd>Jen</dd>
+
+        <dt>Kathryn Lawless</dt>
+        <dd><a href="https://fleeblewidget.co.uk/">Ruth</a></dd>
+
+        <dt>Norman D'Adly</dt>
+        <dd>Matt R</dd>
+
+        <dt>Enrique Graves</dt>
+        <dd>Alec</dd>
+
+        <dt>Michael Nightshade</dt>
+        <dd><a href="https://blog.electricquaker.co.uk/">JTA</a></dd>
+
+        <dt>Vicki D'Adly</dt>
+        <dd>Suz</dd>
+
+        <dt>Narrator</dt>
+        <dd><a href="https://danq.me/">Dan Q</a></dd>
+      </dl>
+
+      <p>
+        which took place via the the magic of the Internet
+        on 23 May 2020
+      </p>
+    </article>
+
+    <aside>
+      <p>
+        Where next:
+      </p>
+      <ul>
+        <li><a href="https://www.youtube.com/playlist?list=PLOM8zbefPpXHmW_XWZlwxME9gUa4f7ki_">Watch video moments</a></li>
+      </ul>
+    </aside>
+
+    <aside>
+      <p>
+        Participants required:
+      </p>
+      <ul>
+        <li>
+          A device capable of video chatting over <a href="https://discord.com/">Discord</a>.
+        </li>
+        <li>
+          A device capable of viewing web pages like this one.
+        </li>
+        <li>
+          These can be a single device so long as it's capable of doing both things simultaneously!
+          If somebody else in your house is playing, too, make sure you have enough devices between you!
+        </li>
+        <li>
+          To be able to spare about 2&half; hours after 8.30pm some evening TBC in May.
+        </li>
+        <li>
+          A tolerance for experimental game-playing: this isn't your father's murder mystery!
+        </li>
+      </ul>
+    </aside>
+  </main>
+</body>
+</html>

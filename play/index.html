@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Murder Club</title>
+  <style type="text/css">
+    :root {
+      --fluid-min-width: 320;
+      --fluid-max-width: 1140;
+      --fluid-min-size: 14;
+      --fluid-max-size: 22;
+      --fluid-min-ratio: 1.2;
+      --fluid-max-ratio: 1.25;
+
+      --fluid-screen: 100vw;
+      --fluid-bp: calc(
+        (var(--fluid-screen) - ((var(--fluid-min-width) / 16) * 1rem)) /
+          ((var(--fluid-max-width) / 16) - (var(--fluid-min-width) / 16))
+      );
+    }
+
+    @media screen and (min-width: 1140px) {
+      :root {
+        --fluid-screen: calc(var(--fluid-max-width) * 1px);
+      }
+    }
+
+    :root {
+      --fluid-max-negative: (1 / var(--fluid-max-ratio) / var(--fluid-max-ratio));
+      --fluid-min-negative: (1 / var(--fluid-min-ratio) / var(--fluid-min-ratio));
+      
+      --fluid-min-scale-0: var(--fluid-min-ratio);
+      --fluid-max-scale-0: var(--fluid-max-ratio);
+      --fluid-min-size-0: (var(--fluid-min-size)) / 16;
+      --fluid-max-size-0: (var(--fluid-max-size)) / 16;
+      --step-0: calc(((var(--fluid-min-size-0) * 1rem) + (var(--fluid-max-size-0) - var(--fluid-min-size-0)) * var(--fluid-bp)));
+      
+      --fluid-min-scale-1: var(--fluid-min-scale-0) * var(--fluid-min-ratio);
+      --fluid-max-scale-1: var(--fluid-max-scale-0) * var(--fluid-max-ratio);
+      --fluid-min-size-1: (var(--fluid-min-size) * var(--fluid-min-scale-0)) / 16;
+      --fluid-max-size-1: (var(--fluid-max-size) * var(--fluid-max-scale-0)) / 16;
+      --step-1: calc(((var(--fluid-min-size-1) * 1rem) + (var(--fluid-max-size-1) - var(--fluid-min-size-1)) * var(--fluid-bp)));
+
+      --fluid-min-scale-2: var(--fluid-min-scale-1) * var(--fluid-min-ratio);
+      --fluid-max-scale-2: var(--fluid-max-scale-1) * var(--fluid-max-ratio);
+      --fluid-min-size-2: (var(--fluid-min-size) * var(--fluid-min-scale-1)) / 16;
+      --fluid-max-size-2: (var(--fluid-max-size) * var(--fluid-max-scale-1)) / 16;
+      --step-2: calc(((var(--fluid-min-size-2) * 1rem) + (var(--fluid-max-size-2) - var(--fluid-min-size-2)) * var(--fluid-bp)));
+
+      --fluid-min-scale-3: var(--fluid-min-scale-2) * var(--fluid-min-ratio);
+      --fluid-max-scale-3: var(--fluid-max-scale-2) * var(--fluid-max-ratio);
+      --fluid-min-size-3: (var(--fluid-min-size) * var(--fluid-min-scale-2)) / 16;
+      --fluid-max-size-3: (var(--fluid-max-size) * var(--fluid-max-scale-2)) / 16;
+      --step-3: calc(((var(--fluid-min-size-3) * 1rem) + (var(--fluid-max-size-3) - var(--fluid-min-size-3)) * var(--fluid-bp)));
+    }
+
+    body {
+      background: #eee;
+      color: #333;
+      margin: 0.5em 1em;
+      font-family: sans-serif;
+      font-size: var(--step-0);
+      line-height: 140%;
+      text-align: justify;
+    }
+    h3 {
+      font-size: var(--step-1);
+    }
+    h2 {
+      font-size: var(--step-2);
+    }
+    h1 {
+      font-size: var(--step-3);
+    }
+
+    li {
+      padding: 0.4em 0;
+    }
+
+    body > section {
+      display: none;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    body.loading > section#loading,
+    body.password > section#password,
+    body.play > section#play,
+    body.document > section#document {
+      display: block;
+    }
+    template {
+      display: none;
+    }
+    input[type=checkbox] {
+      transform: scale(2);
+      margin: 1em;
+    }
+    th, td {
+      text-align: center;
+      padding: 0.5em;
+    }
+    tbody th {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .close {
+      float: right;
+      background: #333;
+      cursor: pointer;
+      color: white;
+      font-family: sans-serif;
+      font-weight: bold;
+      border: 0;
+      border-radius: 50%;
+      font-size: 60px;
+      height: 80px;
+      width: 80px;
+    }
+
+    .close:hover {
+      background: #000;
+    }
+
+    .player-name .title {
+      font-weight: normal;
+      font-size: 80%;
+      font-variant: all-petite-caps;
+    }
+
+    .player-name {
+      text-align: center;
+    }
+
+    .document-access a {
+      text-decoration: none;
+    }
+
+    img {
+      max-width: 100%;
+    }
+
+    input[type="text"], textarea {
+      font-family: sans-serif;
+      font-size: var(--step-0);
+      width: 100%;
+      resize: vertical;
+      padding: 0.25em 0.5em;
+      border: 2px solid black;
+      background: #fff;
+    }
+  </style>
+</head>
+<body class="loading">
+  <section id="loading">
+    <p>Loading. Please wait...</p>
+  </section>
+
+  <section id="password">
+    <p>
+      Password required.
+    </p>
+    <input type="password" value="">
+    <button>Submit</button>
+  </section>
+
+  <section id="play"></section>
+
+  <section id="document">
+    <button class="close">&times;</button>
+    <div id="document-content"></div>
+  </section>
+
+  <template id="player">
+    <h1 class="player-name"></h1>
+    <h2>Documents</h2>
+    <ul class="document-list"></ul>
+  </template>
+
+  <template id="host">
+    <h1>Host Panel</h1>
+    <h2>Document Access</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Round</th>
+          <th>Dr. Chelsea Barren<br><small>The Neighbour</small></th>
+          <th>Enrique Graves<br><small>The Farmhand</small></th>
+          <th>Kathryn Lawless<br><small>The Friend</small></th>
+          <th>Michael Nightshade<br><small>The Land Developer</small></th>
+          <th>Norman D'Adly<br><small>The Brother-In-Law</small></th>
+          <th>Vicki D'Adly<br><small>The Sister</small></th>
+          <th><!-- meta --></th>
+        </tr>
+      </thead>
+      <tbody class="document-access">
+        <tr>
+          <th>0: Rules</th>
+          <td><input type="checkbox" data-id="1" data-document="0-rules" data-title="Rules / How To Play"><a href="documents/0-rules">👁</a></td>
+          <td><input type="checkbox" data-id="2" data-document="0-rules" data-title="Rules / How To Play"><a href="documents/0-rules">👁</a></td>
+          <td><input type="checkbox" data-id="3" data-document="0-rules" data-title="Rules / How To Play"><a href="documents/0-rules">👁</a></td>
+          <td><input type="checkbox" data-id="4" data-document="0-rules" data-title="Rules / How To Play"><a href="documents/0-rules">👁</a></td>
+          <td><input type="checkbox" data-id="5" data-document="0-rules" data-title="Rules / How To Play"><a href="documents/0-rules">👁</a></td>
+          <td><input type="checkbox" data-id="6" data-document="0-rules" data-title="Rules / How To Play"><a href="documents/0-rules">👁</a></td>
+          <td><button class="check-all">✅</button></td>
+        </tr>
+        <tr>
+          <th>0: Invitation / Guests</th>
+          <td><input type="checkbox" data-id="1" data-document="0-guest-list" data-title="Invitation / Guest List"><a href="documents/0-guest-list">👁</a></td>
+          <td><input type="checkbox" data-id="2" data-document="0-guest-list" data-title="Invitation / Guest List"><a href="documents/0-guest-list">👁</a></td>
+          <td><input type="checkbox" data-id="3" data-document="0-guest-list" data-title="Invitation / Guest List"><a href="documents/0-guest-list">👁</a></td>
+          <td><input type="checkbox" data-id="4" data-document="0-guest-list" data-title="Invitation / Guest List"><a href="documents/0-guest-list">👁</a></td>
+          <td><input type="checkbox" data-id="5" data-document="0-guest-list" data-title="Invitation / Guest List"><a href="documents/0-guest-list">👁</a></td>
+          <td><input type="checkbox" data-id="6" data-document="0-guest-list" data-title="Invitation / Guest List"><a href="documents/0-guest-list">👁</a></td>
+          <td><button class="check-all">✅</button></td>
+        </tr>
+        <tr>
+          <th>0: Preamble</th>
+          <td><input type="checkbox" data-id="1" data-document="0-preamble-1-chelsea" data-title="Background"><a href="documents/0-preamble-1-chelsea">👁</a></td>
+          <td><input type="checkbox" data-id="2" data-document="0-preamble-2-enrique" data-title="Background"><a href="documents/0-preamble-2-enrique">👁</a></td>
+          <td><input type="checkbox" data-id="3" data-document="0-preamble-3-kathryn" data-title="Background"><a href="documents/0-preamble-3-kathryn">👁</a></td>
+          <td><input type="checkbox" data-id="4" data-document="0-preamble-4-michael" data-title="Background"><a href="documents/0-preamble-4-michael">👁</a></td>
+          <td><input type="checkbox" data-id="5" data-document="0-preamble-5-norman" data-title="Background"><a href="documents/0-preamble-5-norman">👁</a></td>
+          <td><input type="checkbox" data-id="6" data-document="0-preamble-6-vicki" data-title="Background"><a href="documents/0-preamble-6-vicki">👁</a></td>
+          <td><button class="check-all">✅</button></td>
+        </tr>
+        <tr>
+          <th>1: Introduction</th>
+          <td><input type="checkbox" data-id="1" data-document="1-introduction-1-chelsea" data-title="1. Introduction"><a href="documents/1-introduction-1-chelsea">👁</a></td>
+          <td><input type="checkbox" data-id="2" data-document="1-introduction-2-enrique" data-title="1. Introduction"><a href="documents/1-introduction-2-enrique">👁</a></td>
+          <td><input type="checkbox" data-id="3" data-document="1-introduction-3-kathryn" data-title="1. Introduction"><a href="documents/1-introduction-3-kathryn">👁</a></td>
+          <td><input type="checkbox" data-id="4" data-document="1-introduction-4-michael" data-title="1. Introduction"><a href="documents/1-introduction-4-michael">👁</a></td>
+          <td><input type="checkbox" data-id="5" data-document="1-introduction-5-norman" data-title="1. Introduction"><a href="documents/1-introduction-5-norman">👁</a></td>
+          <td><input type="checkbox" data-id="6" data-document="1-introduction-6-vicki" data-title="1. Introduction"><a href="documents/1-introduction-6-vicki">👁</a></td>
+          <td><button class="check-all">✅</button></td>
+        </tr>
+        <tr>
+          <th style="font-weight: normal;">🔍 A: Michael's map</th>
+          <td><input type="checkbox" data-id="1" data-document="1-introduction-clue" data-title="Exhibit A: Michael's map"><a href="documents/1-introduction-clue">👁</a></td>
+          <td><input type="checkbox" data-id="2" data-document="1-introduction-clue" data-title="Exhibit A: Michael's map"><a href="documents/1-introduction-clue">👁</a></td>
+          <td><input type="checkbox" data-id="3" data-document="1-introduction-clue" data-title="Exhibit A: Michael's map"><a href="documents/1-introduction-clue">👁</a></td>
+          <td style="border: 2px solid darkgreen;"><input type="checkbox" data-id="4" data-document="1-introduction-clue" data-title="Exhibit A: Michael's map"><a href="documents/1-introduction-clue">👁</a></td>
+          <td><input type="checkbox" data-id="5" data-document="1-introduction-clue" data-title="Exhibit A: Michael's map"><a href="documents/1-introduction-clue">👁</a></td>
+          <td><input type="checkbox" data-id="6" data-document="1-introduction-clue" data-title="Exhibit A: Michael's map"><a href="documents/1-introduction-clue">👁</a></td>
+          <td><button class="check-all">✅</button></td>
+        </tr>
+        <tr>
+          <th>2: Search</th>
+          <td><input type="checkbox" data-id="1" data-document="2-search-1-chelsea" data-title="2. The Search"><a href="documents/2-search-1-chelsea">👁</a></td>
+          <td><input type="checkbox" data-id="2" data-document="2-search-2-enrique" data-title="2. The Search"><a href="documents/2-search-2-enrique">👁</a></td>
+          <td><input type="checkbox" data-id="3" data-document="2-search-3-kathryn" data-title="2. The Search"><a href="documents/2-search-3-kathryn">👁</a></td>
+          <td><input type="checkbox" data-id="4" data-document="2-search-4-michael" data-title="2. The Search"><a href="documents/2-search-4-michael">👁</a></td>
+          <td><input type="checkbox" data-id="5" data-document="2-search-5-norman" data-title="2. The Search"><a href="documents/2-search-5-norman">👁</a></td>
+          <td><input type="checkbox" data-id="6" data-document="2-search-6-vicki" data-title="2. The Search"><a href="documents/2-search-6-vicki">👁</a></td>
+          <td><button class="check-all">✅</button></td>
+        </tr>
+        <tr>
+          <th style="font-weight: normal;">🔍 B: Newspaper clipping</th>
+          <td><input type="checkbox" data-id="1" data-document="2-search-clue" data-title="Exhibit B: Newspaper clipping"><a href="documents/2-search-clue">👁</a></td>
+          <td><input type="checkbox" data-id="2" data-document="2-search-clue" data-title="Exhibit B: Newspaper clipping"><a href="documents/2-search-clue">👁</a></td>
+          <td><input type="checkbox" data-id="3" data-document="2-search-clue" data-title="Exhibit B: Newspaper clipping"><a href="documents/2-search-clue">👁</a></td>
+          <td><input type="checkbox" data-id="4" data-document="2-search-clue" data-title="Exhibit B: Newspaper clipping"><a href="documents/2-search-clue">👁</a></td>
+          <td style="border: 2px solid darkgreen;"><input type="checkbox" data-id="5" data-document="2-search-clue" data-title="Exhibit B: Newspaper clipping"><a href="documents/2-search-clue">👁</a></td>
+          <td><input type="checkbox" data-id="6" data-document="2-search-clue" data-title="Exhibit B: Newspaper clipping"><a href="documents/2-search-clue">👁</a></td>
+          <td><button class="check-all">✅</button></td>
+        </tr>
+        <tr>
+          <th>3: Discovery</th>
+          <td><input type="checkbox" data-id="1" data-document="3-discovery-1-chelsea" data-title="3. The Discovery"><a href="documents/3-discovery-1-chelsea">👁</a></td>
+          <td><input type="checkbox" data-id="2" data-document="3-discovery-2-enrique" data-title="3. The Discovery"><a href="documents/3-discovery-2-enrique">👁</a></td>
+          <td><input type="checkbox" data-id="3" data-document="3-discovery-3-kathryn" data-title="3. The Discovery"><a href="documents/3-discovery-3-kathryn">👁</a></td>
+          <td><input type="checkbox" data-id="4" data-document="3-discovery-4-michael" data-title="3. The Discovery"><a href="documents/3-discovery-4-michael">👁</a></td>
+          <td><input type="checkbox" data-id="5" data-document="3-discovery-5-norman" data-title="3. The Discovery"><a href="documents/3-discovery-5-norman">👁</a></td>
+          <td><input type="checkbox" data-id="6" data-document="3-discovery-6-vicki" data-title="3. The Discovery"><a href="documents/3-discovery-6-vicki">👁</a></td>
+          <td><button class="check-all">✅</button></td>
+        </tr>
+        <tr>
+          <th style="font-weight: normal;">🔍 C: 1850 letter</th>
+          <td><input type="checkbox" data-id="1" data-document="3-discovery-clue" data-title="Exhibit C: yellowed letter"><a href="documents/3-discovery-clue">👁</a></td>
+          <td style="border: 2px solid darkgreen;"><input type="checkbox" data-id="2" data-document="3-discovery-clue" data-title="Exhibit C: yellowed letter"><a href="documents/3-discovery-clue">👁</a></td>
+          <td><input type="checkbox" data-id="3" data-document="3-discovery-clue" data-title="Exhibit C: yellowed letter"><a href="documents/3-discovery-clue">👁</a></td>
+          <td><input type="checkbox" data-id="4" data-document="3-discovery-clue" data-title="Exhibit C: yellowed letter"><a href="documents/3-discovery-clue">👁</a></td>
+          <td><input type="checkbox" data-id="5" data-document="3-discovery-clue" data-title="Exhibit C: yellowed letter"><a href="documents/3-discovery-clue">👁</a></td>
+          <td><input type="checkbox" data-id="6" data-document="3-discovery-clue" data-title="Exhibit C: yellowed letter"><a href="documents/3-discovery-clue">👁</a></td>
+          <td><button class="check-all">✅</button></td>
+        </tr>
+        <tr>
+          <th>4: Examination</th>
+          <td><input type="checkbox" data-id="1" data-document="4-examination-1-chelsea" data-title="4. The Examination"><a href="documents/4-examination-1-chelsea">👁</a></td>
+          <td><input type="checkbox" data-id="2" data-document="4-examination-2-enrique" data-title="4. The Examination"><a href="documents/4-examination-2-enrique">👁</a></td>
+          <td><input type="checkbox" data-id="3" data-document="4-examination-3-kathryn" data-title="4. The Examination"><a href="documents/4-examination-3-kathryn">👁</a></td>
+          <td><input type="checkbox" data-id="4" data-document="4-examination-4-michael" data-title="4. The Examination"><a href="documents/4-examination-4-michael">👁</a></td>
+          <td><input type="checkbox" data-id="5" data-document="4-examination-5-norman" data-title="4. The Examination"><a href="documents/4-examination-5-norman">👁</a></td>
+          <td><input type="checkbox" data-id="6" data-document="4-examination-6-vicki" data-title="4. The Examination"><a href="documents/4-examination-6-vicki">👁</a></td>
+          <td><button class="check-all">✅</button></td>
+        </tr>
+        <tr>
+          <th style="font-weight: normal;">🔍 D: Elizabeth's note</th>
+          <td><input type="checkbox" data-id="1" data-document="4-examination-clue" data-title="Exhibit D: Elizabeth's note"><a href="documents/4-examination-clue">👁</a></td>
+          <td><input type="checkbox" data-id="2" data-document="4-examination-clue" data-title="Exhibit D: Elizabeth's note"><a href="documents/4-examination-clue">👁</a></td>
+          <td style="border: 2px solid darkgreen;"><input type="checkbox" data-id="3" data-document="4-examination-clue" data-title="Exhibit D: Elizabeth's note"><a href="documents/4-examination-clue">👁</a></td>
+          <td><input type="checkbox" data-id="4" data-document="4-examination-clue" data-title="Exhibit D: Elizabeth's note"><a href="documents/4-examination-clue">👁</a></td>
+          <td><input type="checkbox" data-id="5" data-document="4-examination-clue" data-title="Exhibit D: Elizabeth's note"><a href="documents/4-examination-clue">👁</a></td>
+          <td><input type="checkbox" data-id="6" data-document="4-examination-clue" data-title="Exhibit D: Elizabeth's note"><a href="documents/4-examination-clue">👁</a></td>
+          <td><button class="check-all">✅</button></td>
+        </tr>
+        <tr>
+          <th>5: Final Clues</th>
+          <td><input type="checkbox" data-id="1" data-document="5-final-1-chelsea" data-title="5. Final Clues"><a href="documents/5-final-1-chelsea">👁</a></td>
+          <td><input type="checkbox" data-id="2" data-document="5-final-2-enrique" data-title="5. Final Clues"><a href="documents/5-final-2-enrique">👁</a></td>
+          <td><input type="checkbox" data-id="3" data-document="5-final-3-kathryn" data-title="5. Final Clues"><a href="documents/5-final-3-kathryn">👁</a></td>
+          <td><input type="checkbox" data-id="4" data-document="5-final-4-michael" data-title="5. Final Clues"><a href="documents/5-final-4-michael">👁</a></td>
+          <td><input type="checkbox" data-id="5" data-document="5-final-5-norman" data-title="5. Final Clues"><a href="documents/5-final-5-norman">👁</a></td>
+          <td><input type="checkbox" data-id="6" data-document="5-final-6-vicki" data-title="5. Final Clues"><a href="documents/5-final-6-vicki">👁</a></td>
+          <td><button class="check-all">✅</button></td>
+        </tr>
+        <tr>
+          <th style="font-weight: normal;">🔍 E: note and checks</th>
+          <td style="border: 2px solid darkgreen;">
+            <input type="checkbox" data-id="1" data-document="5-final-clue" data-title="Exhibit E: note and checks"><a href="documents/5-final-clue">👁</a>
+            <br>
+            <small>(for Barren in #3, others in #5)</small>
+          </td>
+          <td><input type="checkbox" data-id="2" data-document="5-final-clue" data-title="Exhibit E: note and checks"><a href="documents/5-final-clue">👁</a></td>
+          <td><input type="checkbox" data-id="3" data-document="5-final-clue" data-title="Exhibit E: note and checks"><a href="documents/5-final-clue">👁</a></td>
+          <td><input type="checkbox" data-id="4" data-document="5-final-clue" data-title="Exhibit E: note and checks"><a href="documents/5-final-clue">👁</a></td>
+          <td><input type="checkbox" data-id="5" data-document="5-final-clue" data-title="Exhibit E: note and checks"><a href="documents/5-final-clue">👁</a></td>
+          <td><input type="checkbox" data-id="6" data-document="5-final-clue" data-title="Exhibit E: note and checks"><a href="documents/5-final-clue">👁</a></td>
+          <td><button class="check-all">✅</button></td>
+        </tr>
+        <tr>
+          <th>Accusation Form</th>
+          <td><input type="checkbox" data-id="1" data-document="6-accusation-form" data-title="Accusation Form"><a href="documents/6-accusation-form">👁</a></td>
+          <td><input type="checkbox" data-id="2" data-document="6-accusation-form" data-title="Accusation Form"><a href="documents/6-accusation-form">👁</a></td>
+          <td><input type="checkbox" data-id="3" data-document="6-accusation-form" data-title="Accusation Form"><a href="documents/6-accusation-form">👁</a></td>
+          <td><input type="checkbox" data-id="4" data-document="6-accusation-form" data-title="Accusation Form"><a href="documents/6-accusation-form">👁</a></td>
+          <td><input type="checkbox" data-id="5" data-document="6-accusation-form" data-title="Accusation Form"><a href="documents/6-accusation-form">👁</a></td>
+          <td><input type="checkbox" data-id="6" data-document="6-accusation-form" data-title="Accusation Form"><a href="documents/6-accusation-form">👁</a></td>
+          <td><button class="check-all">✅</button></td>
+        </tr>
+        <tr>
+          <th>6: Revelation</th>
+          <td>3. <input type="checkbox" data-id="1" data-document="6-revelation-1-chelsea" data-title="6. The Revelation"><a href="documents/6-revelation-1-chelsea">👁</a></td>
+          <td>4. <input type="checkbox" data-id="2" data-document="6-revelation-2-enrique" data-title="6. The Revelation"><a href="documents/6-revelation-2-enrique">👁</a></td>
+          <td>1. <input type="checkbox" data-id="3" data-document="6-revelation-3-kathryn" data-title="6. The Revelation"><a href="documents/6-revelation-3-kathryn">👁</a></td>
+          <td>2. <input type="checkbox" data-id="4" data-document="6-revelation-4-michael" data-title="6. The Revelation"><a href="documents/6-revelation-4-michael">👁</a></td>
+          <td>6. <input type="checkbox" data-id="5" data-document="6-revelation-5-norman" data-title="6. The Revelation"><a href="documents/6-revelation-5-norman">👁</a></td>
+          <td>5. <input type="checkbox" data-id="6" data-document="6-revelation-6-vicki" data-title="6. The Revelation"><a href="documents/6-revelation-6-vicki">👁</a></td>
+          <td><button class="check-all">✅</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </template>
+
+  <script type="text/javascript" src="https://www.gstatic.com/firebasejs/7.14.2/firebase-app.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/firebasejs/7.14.2/firebase-database.js"></script>
+  <script type="text/javascript" src="marked.min.js"></script>
+  <script type="text/javascript">
+    const body = document.querySelector('body');
+    const play = document.getElementById('play');
+    const documentContent = document.getElementById('document-content');
+    const hash = window.location.hash.slice(1);
+    const apiKeySuffix = hash.slice(0, 5);
+    const idText = hash.slice(5, 6);
+    const dbRoot = 'sour-grapes';
+    let accusation;
+    let documentCache = {};
+
+    if((apiKeySuffix == '') || (idText == '')){
+      body.classList.remove('loading');
+      body.classList.add('password');
+    } else {
+      const idNum = parseInt(idText);
+      const firebaseConfig = {
+        apiKey: "AIzaSyBhjoF0VsiJv8JKbCxAzGeybLnqK_" + apiKeySuffix,
+        authDomain: "murder-2c408.firebaseapp.com",
+        databaseURL: "https://murder-2c408.firebaseio.com",
+        projectId: "murder-2c408",
+        storageBucket: "murder-2c408.appspot.com",
+        messagingSenderId: "144515569460",
+        appId: "1:144515569460:web:d18dcdcfa98be50f0a3761"
+      };
+      firebase.initializeApp(firebaseConfig);
+      const database = firebase.database();
+
+      function showDocument(document){
+        documentContent.innerHTML = '<p>Loading document... please wait...</p>';
+        body.classList.remove('play');
+        body.classList.add('document');
+        if(documentCache[document]){
+          documentContent.innerHTML = documentCache[document];
+          return new Promise(r=>r()); // instantly-fulfil the returned promise
+        }
+        return fetch(`${document}.md`).then(data=>data.text()).then(markdown=>{
+          documentContent.innerHTML = documentCache[document] = marked(markdown);
+        });
+      }
+
+      function hideDocument(e){
+        if(e) e.preventDefault();
+        body.classList.remove('document');
+        body.classList.add('play');
+      }
+
+      function populateAccusationForm(accusationForm, acc, playerId){
+        ['whodunit', 'how', 'why'].forEach(field=>{
+          const input = accusationForm.querySelector(`[data-accusation="${field}"]`);
+          if(acc[field]) input.value = acc[field];
+          input.addEventListener('change', e=>{
+            database.ref(`${dbRoot}/${playerId}/accusation/${field}`).set(e.target.value);
+          });
+        });
+      }
+
+      document.querySelector('#document .close').addEventListener('click', hideDocument);
+      document.addEventListener('keyup', e=>{
+        if(e.code == 'Escape') hideDocument(e);
+      });
+
+      if(idNum == 0){
+        // host mode
+        play.innerHTML = document.querySelector('template#host').innerHTML;
+
+        const documentAccess = play.querySelector('.document-access');
+        let clickHandlersConfigured = false;
+
+        database.ref(dbRoot).on('value', snapshot=>{
+          const val = snapshot.val();
+
+          Object.keys(val).forEach(playerId=>{
+            Object.keys(val[playerId].documents || []).forEach(documentId=>{
+              const checkbox = documentAccess.querySelector(`[data-id="${playerId}"][data-document="${documentId}"]`);
+              if(!checkbox) return;
+              checkbox.checked = true;
+            })
+          });
+
+          if(clickHandlersConfigured) return;
+          clickHandlersConfigured = true;
+
+          documentAccess.addEventListener('click', e=>{
+            if(e.target.classList.contains('check-all')){
+              [...e.target.closest('tr').querySelectorAll('input[type="checkbox"]')].forEach(checkbox=>{
+                database.ref(`${dbRoot}/${checkbox.dataset.id}/documents/${checkbox.dataset.document}`).set({ title: checkbox.dataset.title });
+              });
+            } else if(e.target.href){
+              e.preventDefault();
+              showDocument(e.target.href).then(()=>{
+                // Special case: preload accusation form for SELECTED player
+                const accusationForm = document.querySelector('form#accusation')
+                if(accusationForm){
+                  const playerId = e.target.closest('td').querySelector('input').dataset.id;
+                  populateAccusationForm(accusationForm, val[playerId].accusation, playerId);
+                }
+              });
+              return;
+            }
+            if(e.target.type != 'checkbox') return;
+            if(e.target.checked){
+              database.ref(`${dbRoot}/${e.target.dataset.id}/documents/${e.target.dataset.document}`).set({ title: e.target.dataset.title });
+            } else {
+              database.ref(`${dbRoot}/${e.target.dataset.id}/documents/${e.target.dataset.document}`).remove();
+            }
+          }, { useCapture: true });
+        });
+      } else {
+        // player mode
+        play.innerHTML = document.querySelector('template#player').innerHTML;
+        const playerName = play.querySelector('.player-name');
+        const documentList = play.querySelector('.document-list');
+        documentList.addEventListener('click', e=>{
+          if(!e.target.href) return;
+          e.preventDefault();
+          showDocument(e.target.href).then(()=>{
+            // Special case: preload accusation form for CURRENT player
+            const accusationForm = document.querySelector('form#accusation')
+            if(accusationForm){
+              populateAccusationForm(accusationForm, accusation, idNum);
+            }
+          });
+          return;
+        }, { useCapture: true });
+
+        // player - watch for changes
+        database.ref(`${dbRoot}/${idNum}`).on('value', snapshot=>{
+          const val = snapshot.val();
+          playerName.innerHTML = `<span class="name">${val.name}</span><br><span class="title">${val.title}</span>`;
+          //documentList.innerHTML = val.documents.map
+          const docsToShow = Object.keys(val.documents || []);
+          accusation = val.accusation || {};
+          const docsHTML = docsToShow.map(k=>`<li><a href="documents/${k}">${val.documents[k].title}</a></li>`).join('')
+          documentList.innerHTML = (docsToShow.length == 0) ? '<li>Nothing to see here yet...</li>' : docsHTML;
+        });
+      }
+      [...document.querySelectorAll('template')].forEach(t=>t.outerHTML='');
+
+      body.classList.remove('loading');
+      body.classList.add('play');
+    }
+
+    document.querySelector('#password button').addEventListener('click', e=>{
+      window.location.hash = document.querySelector('#password input').value;
+      window.location.reload();
+    });
+  </script>
+</body>
+</html>
